@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Earthquakes Map</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://educacionadistancia.juntadeandalucia.es/centros/jaen/pluginfile.php/144633/mod_page/content/9/docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+    <style>
+
+    </style>
+</head>
+<body>
+<h1>Victor Sismologia</h1>
+<p>Consultar los datos de los terremotos en España.</p>
+<div id="mapid" style="width: 600px; height: 600px;"></div>
+<article id="list"></article>
+<script>
+    // Creamos un nuevo icono con tu imagen personalizada
+    var myIcon = L.icon({
+        iconUrl: 'terre.png',
+        iconSize: [38, 38]
+    });
+
+    var osmLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+
+    var map = L.map('mapid').setView([36.7305, -6.5356], 6).addLayer(osmLayer);
+
+    // PHP script URL
+    var url = 'earthquakes.php';
+
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(item => {
+                var marker = L.marker([item.lat, item.long], {icon: myIcon}).addTo(map);
+                marker.bindPopup("<b>" + item.location + "</b><br>Magnitude: " + item.magnitude);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+</script>
+</body>
+</html>
